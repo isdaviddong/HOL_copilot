@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>BMI</title>
+    <!-- q: 如何讓頁面好看一點，並且支援 RWD ? -->
+    <!-- a: 使用 bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- 引用 jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- 引用 bootstrap 的 js -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script>
+        //檢查身高體重是否為數字
+        function check() {
+            var weight = document.getElementById("weight").value;
+            var height = document.getElementById("height").value;
+            if (isNaN(weight) || isNaN(height)) {
+                return false;
+            }
+        }
+        //檢查身高體重是否為合理範圍
+        function checkRange() {
+            var weight = document.getElementById("weight").value;
+            var height = document.getElementById("height").value;
+            if (weight < 20 || weight > 200 || height < 50 || height > 250) {
+                return false;
+            }
+        }
+
+        //jquery onload
+        $(function () {
+            //當按下Cal按鈕時，呼叫 check() 與 checkRange() 檢查資料
+            $("#cal").click(function () {
+                if (check() == false || checkRange() == false) {
+                    alert("請輸入數字且範圍為20~200");
+                }
+                else {
+                    //呼叫後端API
+                    $.ajax({
+                        url: "/api/bmi",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({
+                            weight: $("#weight").val(),
+                            height: $("#height").val()
+                        }),
+                        success: function (data) {
+                            //顯示身高體重
+                            alert("身高：" + $("#height").val() + "cm\n體重：" + $("#weight").val() + "kg\nBMI：" + data);
+                        }
+                    });
+
+                }
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>BMI</h1>
+        <form action="bmi.php" method="post">
+            <div class="form-group">
+                <label for="weight">體重：</label>
+                <input class="form-control" type="text" id="weight" name="weight" placeholder="體重">
+            </div>
+            <div class="form-group">
+                <label for="height">身高：</label>
+                <input class="form-control" type="text" id="height" name="height" placeholder="身高">
+            </div>
+            <button class="btn btn-primary" type="button" id="cal" name="cal">計算</button>
+        </form>
+    </div>
+</body>
+
+</html>
